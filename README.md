@@ -6,13 +6,11 @@ BindSympli is a tool to download design layout images from [Sympli](https://symp
 
 Before using BindSympli, you need to install [Node.js](https://nodejs.org/en/), [Puppeteer](https://github.com/GoogleChrome/puppeteer), [wget](https://www.gnu.org/software/wget/), and [ImageMagick](https://imagemagick.org/).
 
-BindSympli preprocessor code is written in Python, but it uses external scripts written in JavaScript and Perl. These scripts are available in BindSympli package:
+BindSympli preprocessor code is written in Python, but it uses external scripts written in JavaScript and Perl. These scripts are provided in BindSympli package:
 
 ```bash
 $ pip install foliantcontrib.bindsympli
 ```
-
-By default, non-Python scripts are located in `/usr/local/bin` directory and added to `PATH`.
 
 ## Config
 
@@ -40,13 +38,13 @@ preprocessors:
 ```
 
 `get_sympli_design_urls_path`
-:   Path to the script `get_sympli_design_urls.pl` or alternative command that launches it (e.g. `/usr/bin/perl some_script.pl`)
+:   Path to the script `get_sympli_design_urls.pl` or alternative command that launches it (e.g. `perl /home/my_username/some_script.pl`). By default, it is assumed that you have this command and all other commands in `PATH`.
 
 `get_sympli_img_urls_path`
 :   Path to the script `get_sympli_img_urls.js` or alternative command that launches it (e.g. `node some_another_script.js`).
 
 `bind_sympli_imgs_path`
-:   Path to the script `bind_sympli_imgs.pl` or alternative command that launches it.
+:   Path to the script `bind_sympli_imgs.pl` or alternative command that launches it (e.g. `/usr/bin/perl /path/to/one_more_script.pl`).
 
 `wget_path`
 :   Path to `wget` binary.

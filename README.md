@@ -31,7 +31,7 @@ preprocessors:
         bind_sympli_imgs_path: bind_sympli_imgs.pl
         wget_path: wget
         convert_path: convert
-        cache_dir: !path bindsymplicache
+        cache_dir: !path .bindsymplicache
         sympli_login: ''
         sympli_password: ''
         image_width: 800

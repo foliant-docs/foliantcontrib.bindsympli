@@ -1,6 +1,6 @@
 # BindSympli
 
-BindSympli is a tool to download design layout images from [Sympli](https://sympli.io/) CDN using certain [Sympli](https://sympli.io/) account, to resize these images, and to bind them with the documentation project.
+BindSympli is a tool to download design layout images from [Sympli](https://sympli.io/) CDN using certain Sympli account, to resize these images, and to bind them with the documentation project.
 
 ## Installation
 
@@ -42,16 +42,30 @@ preprocessors:
 :   Path to `wget` binary.
 
 `convert_path`
-:   Path to `convert` binary, a part of [ImageMagick](https://imagemagick.org/).
+:   Path to `convert` binary, a part of ImageMagick.
 
 `cache_dir`
 :   Directory to store downloaded and resized images.
 
 `sympli_login`
-:   Your username in [Sympli](https://sympli.io/) account.
+:   Your username in Sympli account.
 
 `sympli_password`
-:   Your password in [Sympli](https://sympli.io/) account.
+:   Your password in Sympli account.
 
 `image_width`
 :   Width of resulting images in pixels (original images are too large).
+
+## Usage
+
+To insert a design layout image from Sympli into your documentation, use `<<sympli>...</sympli>` tags in Markdown source:
+
+```markdown
+Here’s an image from Sympli:
+
+<<sympli caption="An optional caption" url="https://app.sympli.io/app#!/designs/0123456789abcdef01234567/specs/assets"></sympli>
+```
+
+You have to specify the URL of Sympli design layout page in `url` attribute.
+
+BindSympli preprocessor will replace such blocks with local image references.

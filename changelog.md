@@ -11,3 +11,8 @@
 # 1.0.3
 
 - Eliminate external Perl scripts, rewrite the preprocessor code in Python.
+
+
+# 1.0.4
+
+- Describe the preprocessor usage in `README.md`.

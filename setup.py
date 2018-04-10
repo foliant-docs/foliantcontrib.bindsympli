@@ -39,8 +39,6 @@ setup(
     data_files=[
         (
             'bin', [
-                'non_python_scripts/bind_sympli_imgs.pl',
-                'non_python_scripts/get_sympli_design_urls.pl',
                 'non_python_scripts/get_sympli_img_urls.js'
             ]
         )

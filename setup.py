@@ -16,14 +16,14 @@ setup(
     description=SHORT_DESCRIPTION,
     long_description=LONG_DESCRIPTION,
     long_description_content_type='text/markdown',
-    version='1.0.4',
+    version='1.0.5',
     author='Artemy Lomov',
     author_email='artemy@lomov.ru',
     url='https://github.com/foliant-docs/foliantcontrib.bindsympli',
     packages=['foliant.preprocessors'],
     license='MIT',
     install_requires=[
-        'foliant>=1.0.5'
+        'foliant>=1.0.4'
     ],
     classifiers=[
         "Development Status :: 5 - Production/Stable",

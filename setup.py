@@ -23,7 +23,7 @@ setup(
     packages=['foliant.preprocessors'],
     license='MIT',
     install_requires=[
-        'foliant>=1.0.4'
+        'foliant>=1.0.5'
     ],
     classifiers=[
         "Development Status :: 5 - Production/Stable",

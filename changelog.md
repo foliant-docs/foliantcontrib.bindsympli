@@ -16,3 +16,8 @@
 # 1.0.4
 
 - Describe the preprocessor usage in `README.md`.
+
+
+# 1.0.5
+
+- Add logging.

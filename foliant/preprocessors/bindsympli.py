@@ -43,6 +43,10 @@ class Preprocessor(BasePreprocessor):
 
         self._img_urls = {}
 
+        self.logger = self.logger.getChild('bindsympli')
+
+        self.logger.debug(f'Preprocessor inited: {self.__dict__}')
+
     def _get_img_hash(self, img_url: str, resized: bool) -> str:
         img_hash = md5(f'{img_url}'.encode())
 
@@ -63,6 +67,8 @@ class Preprocessor(BasePreprocessor):
         return self.pattern.sub(_sub, markdown_content)
 
     def apply(self):
+        self.logger.info('Applying preprocessor')
+
         design_urls = []
 
         for markdown_file_path in self.working_dir.rglob('*.md'):
@@ -77,6 +83,8 @@ class Preprocessor(BasePreprocessor):
                 if design_url not in design_urls:
                     design_urls.append(design_url)
 
+        self.logger.debug(f'Design URLs: {design_urls}')
+
         if design_urls:
             self._cache_dir_path.mkdir(parents=True, exist_ok=True)
 
@@ -86,7 +94,11 @@ class Preprocessor(BasePreprocessor):
             with open(self._design_urls_file_path, 'w', encoding='utf8') as design_urls_file:
                 design_urls_file.write("\n".join(design_urls) + "\n")
 
+                self.logger.debug(f'Design URLs saved into the file: {self._design_urls_file_path}')
+
             try:
+                self.logger.debug('Running Puppeteer-based script')
+
                 command = f'{self.options["get_sympli_img_urls_path"]} ' \
                           f'{self._cache_dir_path.absolute().as_posix()} ' \
                           f'{self.options["sympli_login"]} ' \
@@ -94,6 +106,8 @@ class Preprocessor(BasePreprocessor):
                 run(command, shell=True, check=True, stdout=PIPE, stderr=STDOUT)
 
             except CalledProcessError as exception:
+                self.logger.error(str(exception))
+
                 raise RuntimeError(f'Failed: {exception.output.decode()}')
 
             with open(self._img_urls_file_path, encoding='utf8') as img_urls_file:
@@ -104,20 +118,34 @@ class Preprocessor(BasePreprocessor):
 
                     original_img_path = self._cache_dir_path / f'original_{self._get_img_hash(img_url, False)}.png'
 
+                    self.logger.debug(f'Original image path: {original_img_path}')
+
                     if not original_img_path.exists():
+                        self.logger.debug('Original image not found in cache')
+
                         try:
+                            self.logger.debug(f'Downloading original image: {img_url}')
+
                             command = f'{self.options["wget_path"]} ' \
                                       f'-O {original_img_path.absolute().as_posix()} ' \
                                       f'{img_url}'
                             run(command, shell=True, check=True, stdout=PIPE, stderr=STDOUT)
 
                         except CalledProcessError as exception:
+                            self.logger.error(str(exception))
+
                             raise RuntimeError(f'Failed: {exception.output.decode()}')
 
                     resized_img_path = self._cache_dir_path / f'resized_{self._get_img_hash(img_url, True)}.png'
 
+                    self.logger.debug(f'Resized image path: {resized_img_path}')
+
                     if not resized_img_path.exists():
+                        self.logger.debug('Resized image not found in cache')
+
                         try:
+                            self.logger.debug(f'Resizing original image, width: {self.options["image_width"]}')
+
                             command = f'{self.options["convert_path"]} ' \
                                       f'{original_img_path.absolute().as_posix()} ' \
                                       f'-resize {self.options["image_width"]} ' \
@@ -125,6 +153,8 @@ class Preprocessor(BasePreprocessor):
                             run(command, shell=True, check=True, stdout=PIPE, stderr=STDOUT)
 
                         except CalledProcessError as exception:
+                            self.logger.error(str(exception))
+
                             raise RuntimeError(f'Failed: {exception.output.decode()}')
 
             for markdown_file_path in self.working_dir.rglob('*.md'):
@@ -133,3 +163,5 @@ class Preprocessor(BasePreprocessor):
 
                 with open(markdown_file_path, 'w', encoding='utf8') as markdown_file:
                     markdown_file.write(self.process_sympli(markdown_content))
+
+        self.logger.info('Preprocessor applied')

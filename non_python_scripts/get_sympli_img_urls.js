@@ -63,32 +63,19 @@ const puppeteer = require('puppeteer');
     const page = await browser.newPage();
 
 
-    // Disabling download of images
-
-    await page.setRequestInterception(true);
-
-    page.on('request', request => {
-        if (request.resourceType === 'image') {
-            request.abort();
-        }
-        else {
-            request.continue();
-        }
-    });
-
     try {
         // Opening the login page
         console.log('Logging in');
-        await page.goto(loginPageUrl, {timeout: 0});
+        await page.goto(loginPageUrl, {waitUntil: 'networkidle2'});
 
 
         // Filling the email field
-        await page.click(usernameSelector);
+        await page.focus(usernameSelector, {delay: 500});
         await page.keyboard.type(sympliLogin);
 
 
         // Filling the password field
-        await page.click(passwordSelector);
+        await page.focus(passwordSelector, {delay: 500});
         await page.keyboard.type(sympliPassword);
 
 
@@ -115,9 +102,11 @@ const puppeteer = require('puppeteer');
                 console.log('Opening an empty page');
                 await page.goto('about:blank');
 
+
                 // Opening a design page
                 console.log("Opening the design page: '" + designUrls[i] + "'");
-                await page.goto(designUrls[i], {timeout: 0});
+                await page.goto(designUrls[i], {waitUntil: 'networkidle2'});
+
 
                 // Waiting for the necessary element 'img'
                 await page.waitForSelector(imgSelector);

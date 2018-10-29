@@ -64,7 +64,7 @@ function sleep(ms) {
 const puppeteer = require('puppeteer');
 
 (async() => {
-    // Trying to get data from Sympli site not more than 3 attempts
+    // Trying to get data from Sympli site for a few attempts
 
     let triesCount = 0;
 

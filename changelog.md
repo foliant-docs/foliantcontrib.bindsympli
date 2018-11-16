@@ -1,27 +1,31 @@
+# 1.0.8
+
+-   Do not rewrite source Markdown file if an error occurs.
+
 # 1.0.7
 
-- Use 60-seconds timeout instead of 30-seconds. Provide multiple attempts to open pages.
+-   Use 60-seconds timeout instead of 30-seconds. Provide multiple attempts to open pages.
 
 # 1.0.6
 
-- Do not disable images downloading. Use delays when filling email and password fields. Wait for idle network connections when loading pages.
+-   Do not disable images downloading. Use delays when filling email and password fields. Wait for idle network connections when loading pages.
 
 # 1.0.5
 
-- Add logging.
+-   Add logging.
 
 # 1.0.4
 
-- Describe the preprocessor usage in `README.md`.
+-   Describe the preprocessor usage in `README.md`.
 
 # 1.0.3
 
-- Eliminate external Perl scripts, rewrite the preprocessor code in Python.
+-   Eliminate external Perl scripts, rewrite the preprocessor code in Python.
 
 # 1.0.2
 
-- Change the path for non-Python scripts once more.
+-   Change the path for non-Python scripts once more.
 
 # 1.0.1
 
-- Change the path for non-Python scripts.
+-   Change the path for non-Python scripts.

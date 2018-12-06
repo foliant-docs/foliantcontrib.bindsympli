@@ -56,6 +56,9 @@ preprocessors:
 `image_width`
 :   Width of resulting images in pixels (original images are too large).
 
+`max_attempts`
+:   Maximum number of attempts to run the script `get_sympli_img_urls.js` on fails.
+
 ## Usage
 
 To insert a design layout image from Sympli into your documentation, use `<<sympli>...</sympli>` tags in Markdown source:

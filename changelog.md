@@ -1,3 +1,9 @@
+# 1.0.9
+
+-   Move the `while` loop from JavaScript code to Python code.
+-   Add the `max_attempts` config option.
+-   Require Foliant 1.0.8 because of using the `utils.output()` method.
+
 # 1.0.8
 
 -   Do not rewrite source Markdown file if an error occurs.

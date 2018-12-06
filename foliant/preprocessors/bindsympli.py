@@ -15,9 +15,11 @@ import re
 from pathlib import Path
 from hashlib import md5
 from subprocess import run, PIPE, STDOUT, CalledProcessError
+from time import sleep
 from typing import Dict
 OptionValue = int or float or bool or str
 
+from foliant.utils import output
 from foliant.preprocessors.base import BasePreprocessor
 
 
@@ -30,6 +32,7 @@ class Preprocessor(BasePreprocessor):
         'sympli_login': '',
         'sympli_password': '',
         'image_width': 800,
+        'max_attempts': 5,
     }
 
     tags = 'sympli',
@@ -96,19 +99,36 @@ class Preprocessor(BasePreprocessor):
 
                 self.logger.debug(f'Design URLs saved into the file: {self._design_urls_file_path}')
 
-            try:
-                self.logger.debug('Running Puppeteer-based script')
+            output('Trying to run Puppeteer-based script', self.quiet)
 
-                command = f'{self.options["get_sympli_img_urls_path"]} ' \
-                          f'{self._cache_dir_path.absolute().as_posix()} ' \
-                          f'{self.options["sympli_login"]} ' \
-                          f'{self.options["sympli_password"]}'
-                run(command, shell=True, check=True, stdout=PIPE, stderr=STDOUT)
+            command = f'{self.options["get_sympli_img_urls_path"]} ' \
+                      f'{self._cache_dir_path.absolute().as_posix()} ' \
+                      f'{self.options["sympli_login"]} ' \
+                      f'{self.options["sympli_password"]}'
 
-            except CalledProcessError as exception:
-                self.logger.error(str(exception))
+            attempt = 0
 
-                raise RuntimeError(f'Failed: {exception.output.decode()}')
+            while True:
+                attempt += 1
+
+                try:
+                    output(f'Attempt {attempt}', self.quiet)
+
+                    self.logger.debug(f'Running Puppeteer-based script, attempt {attempt}')
+
+                    run(command, shell=True, check=True, stdout=PIPE, stderr=STDOUT)
+
+                except CalledProcessError as exception:
+                    if attempt >= self.options["max_attempts"]:
+                        self.logger.error(str(exception))
+
+                        raise RuntimeError(f'Failed: {exception.output.decode()}')
+
+                    else:
+                        sleep(5 * attempt)
+                        continue
+
+                break
 
             with open(self._img_urls_file_path, encoding='utf8') as img_urls_file:
                 for line in img_urls_file:

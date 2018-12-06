@@ -33,6 +33,7 @@ preprocessors:
         sympli_login: ''
         sympli_password: ''
         image_width: 800
+        max_attempts: 5
 ```
 
 `get_sympli_img_urls_path`

@@ -65,9 +65,7 @@ const puppeteer = require('puppeteer');
 
     try {
         // Opening the login page
-
         console.log('Logging in');
-
         await page.goto(loginPageUrl, {waitUntil: 'networkidle2'});
 
 
@@ -108,25 +106,40 @@ const puppeteer = require('puppeteer');
                 // Opening a design page
                 console.log("Opening the design page: '" + designUrls[i] + "'");
                 await page.goto(designUrls[i], {waitUntil: 'networkidle2'});
+                let title = await page.title();
 
 
-                // Waiting for the necessary element 'img'
-                await page.waitForSelector(imgSelector);
+                // Checking if the design page found
+
+                if(title != 'Not Found - Sympli')
+                {
+                    // Waiting for the necessary element 'img'
+                    await page.waitForSelector(imgSelector);
 
 
-                // Getting the value of 'src' attribute
+                    // Getting the value of 'src' attribute
 
-                let imgSrc = await page.evaluate((imgSelector) => {
-                    return document.querySelector(imgSelector).src;
-                }, imgSelector);
-
-
-                // Writing the result to STDOUT
-                console.log("    Image URL: '" + imgSrc + "'");
+                    let imgSrc = await page.evaluate((imgSelector) => {
+                        return document.querySelector(imgSelector).src;
+                    }, imgSelector);
 
 
-                // Updating output
-                output += designUrls[i] + "\t" + imgSrc + "\n";
+                    // Writing the result to STDOUT
+                    console.log("    Image URL: '" + imgSrc + "'");
+
+
+                    // Updating output
+                    output += designUrls[i] + "\t" + imgSrc + "\n";
+                }
+                else
+                {
+                    // Writing the result to STDOUT
+                    console.log("    Design not found");
+
+
+                    // Updating output
+                    output += designUrls[i] + "\t" + 'NOT_FOUND' + "\n";
+                }
             } catch (err) {
                 console.error(err);
                 process.exit(1);

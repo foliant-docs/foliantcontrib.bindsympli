@@ -59,7 +59,12 @@ class Preprocessor(BasePreprocessor):
         return f'{img_hash.hexdigest()}'
 
     def _process_sympli(self, options: Dict[str, OptionValue]) -> str:
-        resized_img_path = self._cache_dir_path / f'resized_{self._get_img_hash(self._img_urls[options.get("url", "")], True)}.png'
+        img_url = self._img_urls[options.get("url", "")]
+
+        if not img_url.startswith('https://cdn.sympli.io/'):
+            return ''
+
+        resized_img_path = self._cache_dir_path / f'resized_{self._get_img_hash(img_url, True)}.png'
         resized_img_ref = f'![{options.get("caption", "")}]({resized_img_path.absolute().as_posix()})'
         return resized_img_ref
 
@@ -135,6 +140,18 @@ class Preprocessor(BasePreprocessor):
                     (design_url, img_url) = line.split()
 
                     self._img_urls[design_url] = img_url
+
+                    if not img_url.startswith('https://cdn.sympli.io/'):
+                        warning_message = f'Invalid image URL for the design page {design_url}: {img_url}'
+
+                        if img_url == 'NOT_FOUND':
+                            warning_message = f'Design {design_url} not found'
+
+                        self.logger.warning(warning_message)
+
+                        output(warning_message, self.quiet)
+
+                        continue
 
                     original_img_path = self._cache_dir_path / f'original_{self._get_img_hash(img_url, False)}.png'
 

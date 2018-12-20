@@ -1,3 +1,7 @@
+# 1.0.10
+
+-   Check if the design page exists and the image URL is valid.
+
 # 1.0.9
 
 -   Move the `while` loop from JavaScript code to Python code.

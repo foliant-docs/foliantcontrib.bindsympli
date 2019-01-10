@@ -65,30 +65,48 @@ const puppeteer = require('puppeteer');
 
     try {
         // Opening the login page
-        console.log('Logging in');
+        console.log('Opening the login page');
         await page.goto(loginPageUrl, {waitUntil: 'networkidle2'});
 
 
         // Filling the email field
+        console.log('Filling the email field');
         await page.focus(usernameSelector, {delay: 500});
         await page.keyboard.type(sympliLogin);
 
 
         // Filling the password field
+        console.log('Filling the password field');
         await page.focus(passwordSelector, {delay: 500});
         await page.keyboard.type(sympliPassword);
 
 
         // Clicking the submit button
+        console.log('Clicking the submit button');
         await page.click(buttonSelector);
 
 
-        // Waiting for load
+        // Waiting for an after-login page load
+        console.log('Waiting for an after-login page load');
         await page.waitForNavigation({waitUntil: 'networkidle2'});
     } catch (err) {
         console.error(err);
         process.exit(1);
     }
+
+
+    // Disable images downloading
+
+    await page.setRequestInterception(true);
+
+    page.on('request', interceptedRequest => {
+        if (interceptedRequest.resourceType() === 'image') {
+            interceptedRequest.abort();
+        }
+        else {
+            interceptedRequest.continue();
+        }
+    });
 
 
     // Processing design pages

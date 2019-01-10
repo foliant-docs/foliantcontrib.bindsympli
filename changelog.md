@@ -1,3 +1,7 @@
+# 1.0.11
+
+-   Disable images downloading from design pages only, but not from login page.
+
 # 1.0.10
 
 -   Check if the design page exists and the image URL is valid.

@@ -1,3 +1,7 @@
+# 1.0.12
+
+-   Capture the output of the Puppeter-based script and write it to STDOUT.
+
 # 1.0.11
 
 -   Disable images downloading from design pages only, but not from login page.

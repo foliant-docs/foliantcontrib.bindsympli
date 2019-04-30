@@ -121,7 +121,10 @@ class Preprocessor(BasePreprocessor):
 
                     self.logger.debug(f'Running Puppeteer-based script, attempt {attempt}')
 
-                    run(command, shell=True, check=True, stdout=PIPE, stderr=STDOUT)
+                    command_output = run(command, shell=True, check=True, stdout=PIPE, stderr=STDOUT)
+
+                    if command_output.stdout:
+                        output(command_output.stdout.decode('utf8', errors='ignore'), self.quiet)
 
                 except CalledProcessError as exception:
                     if attempt >= self.options["max_attempts"]:

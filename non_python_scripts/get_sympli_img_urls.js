@@ -49,6 +49,10 @@ const passwordSelector = '#password';
 const buttonSelector = '#login-form > div.layout-login__form-button > button.btn.btn-primary';
 
 
+// After-login page settings
+const accountNameIdSelector = '#account-name-id';
+
+
 // Design page settings
 const imgSelector = 'div.general-canvas.preview-canvas-wrapper > div > div.preview-canvas.zdisable-anti-aliasing > img.sprite';
 
@@ -59,7 +63,7 @@ const puppeteer = require('puppeteer');
 
 (async() => {
     // Launching Chrome
-    const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
+    const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox'], timeout: 120000});
     const page = await browser.newPage();
     page.setDefaultNavigationTimeout(60000);
 
@@ -83,12 +87,16 @@ const puppeteer = require('puppeteer');
 
         // Clicking the submit button
         console.log('Clicking the submit button');
-        await page.click(buttonSelector);
+        await page.click(buttonSelector, {delay: 500});
 
 
-        // Waiting for an after-login page load
-        console.log('Waiting for an after-login page load');
-        await page.waitForNavigation({waitUntil: 'networkidle2'});
+        // Sleeping for 10 seconds
+        await sleep(10000);
+
+
+        // Waiting for an after-login page opening
+        console.log('Waiting for an after-login page opening');
+        await page.waitForSelector(accountNameIdSelector);
     } catch (err) {
         console.error(err);
         process.exit(1);
@@ -119,6 +127,10 @@ const puppeteer = require('puppeteer');
                 // Opening an empty page
                 console.log('Opening an empty page');
                 await page.goto('about:blank');
+
+
+                // Sleeping for 3 seconds
+                await sleep(3000);
 
 
                 // Opening a design page
@@ -173,3 +185,12 @@ const puppeteer = require('puppeteer');
     // Output
     fs.writeFile(imgUrlsFile, output, () => {});
 })();
+
+
+// Sleep function
+
+function sleep(ms) {
+    return new Promise(resolve => {
+        setTimeout(resolve, ms);
+    })
+}

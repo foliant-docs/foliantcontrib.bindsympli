@@ -67,9 +67,11 @@ To insert a design layout image from Sympli into your documentation, use `<<symp
 ```markdown
 Here’s an image from Sympli:
 
-<<sympli caption="An optional caption" url="https://app.sympli.io/app#!/designs/0123456789abcdef01234567/specs/assets"></sympli>
+<<sympli caption="An optional caption" width="400" url="https://app.sympli.io/app#!/designs/0123456789abcdef01234567/specs/assets"></sympli>
 ```
 
 You have to specify the URL of Sympli design layout page in `url` attribute.
+
+You may specify an optional caption in the `caption` attribute, and an optional custom image width in the `width` attribute. The `width` attribute overrides the `image_width` config option for a certain image.
 
 BindSympli preprocessor will replace such blocks with local image references.

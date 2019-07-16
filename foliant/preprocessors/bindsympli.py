@@ -40,7 +40,7 @@ class Preprocessor(BasePreprocessor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self._cache_dir_path = self.project_path / self.options['cache_dir']
+        self._cache_dir_path = (self.project_path / self.options['cache_dir']).resolve()
         self._design_urls_file_path = self._cache_dir_path / 'design_urls.txt'
         self._img_urls_file_path = self._cache_dir_path / 'img_urls.txt'
 
@@ -50,22 +50,70 @@ class Preprocessor(BasePreprocessor):
 
         self.logger.debug(f'Preprocessor inited: {self.__dict__}')
 
-    def _get_img_hash(self, img_url: str, resized: bool) -> str:
-        img_hash = md5(f'{img_url}'.encode())
-
-        if resized:
-            img_hash.update(f'{self.options["image_width"]}'.encode())
-
-        return f'{img_hash.hexdigest()}'
-
     def _process_sympli(self, options: Dict[str, OptionValue]) -> str:
-        img_url = self._img_urls[options.get("url", "")]
+        img_url = self._img_urls[options.get('url', '')]
 
         if not img_url.startswith('https://cdn.sympli.io/'):
             return ''
 
-        resized_img_path = self._cache_dir_path / f'resized_{self._get_img_hash(img_url, True)}.png'
-        resized_img_ref = f'![{options.get("caption", "")}]({resized_img_path.absolute().as_posix()})'
+        img_hash = f'{md5(img_url.encode()).hexdigest()}'
+
+        original_img_path = (self._cache_dir_path / f'original_{img_hash}.png').resolve()
+
+        self.logger.debug(f'Original image path: {original_img_path}')
+
+        if not original_img_path.exists():
+            self.logger.debug('Original image not found in cache')
+
+            try:
+                self.logger.debug(f'Downloading original image: {img_url}')
+
+                command = (
+                    f'{self.options["wget_path"]} ' +
+                    f'-O {original_img_path} ' +
+                    f'{img_url}'
+                )
+
+                run(command, shell=True, check=True, stdout=PIPE, stderr=STDOUT)
+
+            except CalledProcessError as exception:
+                self.logger.error(str(exception))
+
+                raise RuntimeError(f'Failed: {exception.output.decode()}')
+
+        resized_img_width = options.get('width', self.options['image_width'])
+
+        self.logger.debug(f'Resized image width: {resized_img_width}')
+
+        resized_img_path = (
+            self._cache_dir_path /
+            f'resized_{resized_img_width}_{img_hash}.png'
+        ).resolve()
+
+        self.logger.debug(f'Resized image path: {resized_img_path}')
+
+        if not resized_img_path.exists():
+            self.logger.debug('Resized image not found in cache')
+
+            try:
+                self.logger.debug(f'Resizing original image, width: {self.options["image_width"]}')
+
+                command = (
+                    f'{self.options["convert_path"]} ' +
+                    f'{original_img_path} ' +
+                    f'-resize {resized_img_width} ' +
+                    f'{resized_img_path}'
+                )
+
+                run(command, shell=True, check=True, stdout=PIPE, stderr=STDOUT)
+
+            except CalledProcessError as exception:
+                self.logger.error(str(exception))
+
+                raise RuntimeError(f'Failed: {exception.output.decode()}')
+
+        resized_img_ref = f'![{options.get("caption", "")}]({resized_img_path})'
+
         return resized_img_ref
 
     def process_sympli(self, markdown_content: str) -> str:
@@ -100,16 +148,18 @@ class Preprocessor(BasePreprocessor):
                 self._design_urls_file_path.unlink()
 
             with open(self._design_urls_file_path, 'w', encoding='utf8') as design_urls_file:
-                design_urls_file.write("\n".join(design_urls) + "\n")
+                design_urls_file.write('\n'.join(design_urls) + '\n')
 
                 self.logger.debug(f'Design URLs saved into the file: {self._design_urls_file_path}')
 
             output('Trying to run Puppeteer-based script', self.quiet)
 
-            command = f'{self.options["get_sympli_img_urls_path"]} ' \
-                      f'{self._cache_dir_path.absolute().as_posix()} ' \
-                      f'{self.options["sympli_login"]} ' \
-                      f'{self.options["sympli_password"]}'
+            command = (
+                f'{self.options["get_sympli_img_urls_path"]} ' +
+                f'{self._cache_dir_path} ' +
+                f'{self.options["sympli_login"]} ' +
+                f'{self.options["sympli_password"]}'
+            )
 
             attempt = 0
 
@@ -127,7 +177,7 @@ class Preprocessor(BasePreprocessor):
                         output(command_output.stdout.decode('utf8', errors='ignore'), self.quiet)
 
                 except CalledProcessError as exception:
-                    if attempt >= self.options["max_attempts"]:
+                    if attempt >= self.options['max_attempts']:
                         self.logger.error(str(exception))
 
                         raise RuntimeError(f'Failed: {exception.output.decode()}')
@@ -155,47 +205,6 @@ class Preprocessor(BasePreprocessor):
                         output(warning_message, self.quiet)
 
                         continue
-
-                    original_img_path = self._cache_dir_path / f'original_{self._get_img_hash(img_url, False)}.png'
-
-                    self.logger.debug(f'Original image path: {original_img_path}')
-
-                    if not original_img_path.exists():
-                        self.logger.debug('Original image not found in cache')
-
-                        try:
-                            self.logger.debug(f'Downloading original image: {img_url}')
-
-                            command = f'{self.options["wget_path"]} ' \
-                                      f'-O {original_img_path.absolute().as_posix()} ' \
-                                      f'{img_url}'
-                            run(command, shell=True, check=True, stdout=PIPE, stderr=STDOUT)
-
-                        except CalledProcessError as exception:
-                            self.logger.error(str(exception))
-
-                            raise RuntimeError(f'Failed: {exception.output.decode()}')
-
-                    resized_img_path = self._cache_dir_path / f'resized_{self._get_img_hash(img_url, True)}.png'
-
-                    self.logger.debug(f'Resized image path: {resized_img_path}')
-
-                    if not resized_img_path.exists():
-                        self.logger.debug('Resized image not found in cache')
-
-                        try:
-                            self.logger.debug(f'Resizing original image, width: {self.options["image_width"]}')
-
-                            command = f'{self.options["convert_path"]} ' \
-                                      f'{original_img_path.absolute().as_posix()} ' \
-                                      f'-resize {self.options["image_width"]} ' \
-                                      f'{resized_img_path.absolute().as_posix()}'
-                            run(command, shell=True, check=True, stdout=PIPE, stderr=STDOUT)
-
-                        except CalledProcessError as exception:
-                            self.logger.error(str(exception))
-
-                            raise RuntimeError(f'Failed: {exception.output.decode()}')
 
             for markdown_file_path in self.working_dir.rglob('*.md'):
                 with open(markdown_file_path, encoding='utf8') as markdown_file:

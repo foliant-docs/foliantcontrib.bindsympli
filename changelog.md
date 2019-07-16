@@ -1,8 +1,13 @@
+# 1.0.14
+
+-   Add `width` attribute to `<sympli>` tag.
+-   Refactor a little.
+
 # 1.0.13
 
--    Set 2-minutes timeout instead of default 30-seconds when launching Chromium.
--    Use `page.waitForSelector()` instead of `page.waitForNavigation()`.
--    Use custom `sleep()` function for intentional delays.
+-   Set 2-minutes timeout instead of default 30-seconds when launching Chromium.
+-   Use `page.waitForSelector()` instead of `page.waitForNavigation()`.
+-   Use custom `sleep()` function for intentional delays.
 
 # 1.0.12
 

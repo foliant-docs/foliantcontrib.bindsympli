@@ -1,3 +1,5 @@
+[![](https://img.shields.io/pypi/v/foliantcontrib.bindsympli.svg)](https://pypi.org/project/foliantcontrib.bindsympli/) [![](https://img.shields.io/github/v/tag/foliant-docs/foliantcontrib.bindsympli.svg?label=GitHub)](https://github.com/foliant-docs/foliantcontrib.bindsympli)
+
 # BindSympli
 
 BindSympli is a tool to download design layout images from [Sympli](https://sympli.io/) CDN using certain Sympli account, to resize these images, and to bind them with the documentation project.
@@ -62,12 +64,12 @@ preprocessors:
 
 ## Usage
 
-To insert a design layout image from Sympli into your documentation, use `<<sympli>...</sympli>` tags in Markdown source:
+To insert a design layout image from Sympli into your documentation, use `<sympli>...</sympli>` tags in Markdown source:
 
 ```markdown
 Here’s an image from Sympli:
 
-<<sympli caption="An optional caption" width="400" url="https://app.sympli.io/app#!/designs/0123456789abcdef01234567/specs/assets"></sympli>
+<sympli caption="An optional caption" width="400" url="https://app.sympli.io/app#!/designs/0123456789abcdef01234567/specs/assets"></sympli>
 ```
 
 You have to specify the URL of Sympli design layout page in `url` attribute.
